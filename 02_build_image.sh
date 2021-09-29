@@ -47,3 +47,6 @@ cat <<EOF >"${IMAGE_PATH}"/README.diskdefines
 #define TOTALNUM  0
 #define TOTALNUM0  1
 EOF
+
+mkdir "${IMAGE_PATH}"/.disk
+touch "${IMAGE_PATH}"/.disk/info

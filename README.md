@@ -1,16 +1,16 @@
-# mbp-ubuntu
+# mbp-kde-neon
 
-The ISO in from this repo should allow you to install ubuntu without using an external keyboard or mouse on a MacBook Pro. It work in my MacBook with T2.
+The ISO in from this repo should allow you to install KDE Neon without using an external keyboard or mouse on a MacBook Pro. It work in my MacBook with T2.
 
 [![CI](https://github.com/marcosfad/mbp-ubuntu/actions/workflows/CI.yml/badge.svg)](https://github.com/marcosfad/mbp-ubuntu/actions/workflows/CI.yml)
 
-**If this repo helped you in any way, consider inviting a coffee to the people in the [credits](https://github.com/marcosfad/mbp-ubuntu#credits) or [me](https://paypal.me/marcosfad).**
+**If this repo helped you in any way, consider inviting a coffee to the people in the [credits](https://github.com/marcosfad/mbp-ubuntu#credits).**
 
-UBUNTU 20.04 ISO with Apple T2 patches built-in.
+KDE Neon User ISO with Apple T2 patches built-in.
 
 Apple T2 drivers are integrated with this iso. 
 
-This repo is a rework of the great work done by [@mikeeq](https://github.com/mikeeq/mbp-fedora)
+This repo is a rework of the great work done by [@marcosfad](https://github.com/marcosfad/mbp-ubuntu)
 
 I'm using the Kernel from - <https://github.com/marcosfad/mbp-ubuntu-kernel>
 
@@ -20,12 +20,6 @@ Using additional drivers:
 
 Bootloader is configure correctly out of the box. No workaround needed.
 
-## Before I begin, what version should I use? "mbp" or "mbp-16x-wifi"?
-
-The difference between the two is that the mbp-16x-wifi version includes a different version of the brcmfmac wifi driver, made by corellium for M1 macs. This version of the wifi driver works on some models that the brcmfmac driver included with the mbp version doesn't support. Refer to the table on [this page](https://wiki.t2linux.org/guides/wifi/) to figure out which versions will work (Look at the "Firmware Options" column, Mojave means you can use the "mbp" version, and Big Sur means you can use the "mbp-16x-wifi" version).
-
-**!! Please note that as of the v20.04-5.10.52 release, the mbp-16x-wifi iso does not support wifi on models with the BCM4377 chipset. For now, you can install a kernel from [here](https://github.com/AdityaGarg8/mbp-16.x-ubuntu-kernel/releases/tag/v5.13.12-1) after installing ubuntu if you have the BCM4377 chipset.**
-
 ## Installation
 
 1. Reduce the size of the mac partition in MacOS
@@ -34,19 +28,19 @@ The difference between the two is that the mbp-16x-wifi version includes a diffe
 ```bash
 diskutil list # found which number has the USB
 diskutil umountDisk /dev/diskX
-sudo gdd bs=4M if=ubuntu-20.04-5.6.10-mbp.iso of=/dev/diskX conv=fdatasync status=progress
+sudo gdd bs=4M if=neon-user-<kernel-version>.iso of=/dev/diskX conv=fdatasync status=progress
 ```
 4. Boot in Recovery mode and allow booting unknown OS
 5. Restart and immediately press the option key until the Logo come up
 6. Select "EFI Boot" (the third option was the one that worked for me)
-7. Launch Ubuntu Live
-8. Use Ubiquity to install (just click on it)
+7. Launch KDE Neon Live
+8. Use Calamary to install (just click on it)
 9. Select the options that work for you and use for the partition the following setup:
     * Leave the efi boot as preselected by the installer. Your Mac will keep on working with out problems.
     * Add a ext4 partition and mounted as `/boot` (1024MB).
     * Add a ext4 partition and monted as `/` (rest).
     * Select the `/boot` partition as a target for GRUB installation, otherwise the system won't boot.
-10. Run the installer (In my case it had some problem removing some packages at the end, but this is no real problem)
+10. Run the installer (In my case it had some problem with copying syslog file at the end, but this is no real problem)
 11. Shutdown and remove the USB Drive
 12. Start again using the option key. Select the new efi boot.
 13. Enjoy.
@@ -91,7 +85,7 @@ If you are upgrading from 5.7.19 to a newer kernel version (5.10+), you will nee
 
 Check <https://github.com/marcosfad/mbp-ubuntu/blob/master/files/chroot_build.sh> to see how it is done.
 
-## Know issues
+## Know issues (Following the marcosfad/mbp-ubuntu)
 
 - Sound is not working after the install. Follow the instructions detailed by @kevineinarsson: <https://gist.github.com/kevineinarsson/8e5e92664f97508277fefef1b8015fba>  
 On MBP 16,1, you might also need to disable realtime scheduling if the above gist doesn't work, because the pulseaudio server might get killed if the realtime budget is exceeded (<https://bugs.freedesktop.org/show_bug.cgi?id=94629>). Just add `realtime-scheduling = no` to `/etc/pulse/daemon.conf`.
@@ -147,6 +141,7 @@ On MBP 16,1, you might also need to disable realtime scheduling if the above gis
 
 ## Credits
 
+- @marcosfad - thanks for the amazing work in mbp-ubuntu :)
 - @mikeeq - thanks for the amazing work in mbp-fedora
 - @MCMrARM - thanks for all RE work
 - @ozbenh - thanks for submitting NVME patch

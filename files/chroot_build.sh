@@ -22,6 +22,8 @@ deb http://archive.ubuntu.com/ubuntu/ focal-security main restricted universe mu
 deb-src http://archive.ubuntu.com/ubuntu/ focal-security main restricted universe multiverse
 deb http://archive.ubuntu.com/ubuntu/ focal-updates main restricted universe multiverse
 deb-src http://archive.ubuntu.com/ubuntu/ focal-updates main restricted universe multiverse
+deb http://archive.ubuntu.com/ubuntu/ focal-backports main restricted universe multiverse
+deb http://archive.canonical.com/ubuntu focal partner
 EOF
 apt-get update
 
@@ -32,6 +34,8 @@ apt-get install -y systemd-sysv gnupg curl wget
 mkdir -p /etc/apt/sources.list.d
 echo "deb https://mbp-ubuntu-kernel.herokuapp.com/ /" >/etc/apt/sources.list.d/mbp-ubuntu-kernel.list
 curl -L https://mbp-ubuntu-kernel.herokuapp.com/KEY.gpg | apt-key add -
+echo "deb http://archive.neon.kde.org/user focal main" > /etc/apt/sources.list.d/neon.list
+curl -L http://archive.neon.kde.org/public.key | apt-key add -
 apt-get update
 
 echo >&2 "===]> Info: Configure machine-id and divert... "
@@ -46,6 +50,7 @@ echo >&2 "===]> Info: Install packages needed for Live System... "
 export DEBIAN_FRONTEND=noninteractive
 apt-get install -y -qq -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" \
   ubuntu-standard \
+  shim-signed \
   sudo \
   casper \
   lupin-casper \
@@ -72,18 +77,12 @@ echo >&2 "===]> Info: Install window manager... "
 
 apt-get install -y -qq -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" \
   plymouth-theme-ubuntu-logo \
-  ubuntu-desktop-minimal \
-  ubuntu-gnome-wallpapers \
-  snapd
+  neon-desktop
 
 echo >&2 "===]> Info: Install Graphical installer... "
 
 apt-get install -y -qq -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" \
-  ubiquity \
-  ubiquity-casper \
-  ubiquity-frontend-gtk \
-  ubiquity-slideshow-ubuntu \
-  ubiquity-ubuntu-artwork
+  neon-live
 
 echo >&2 "===]> Info: Install useful applications... "
 
