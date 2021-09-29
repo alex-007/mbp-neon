@@ -83,7 +83,7 @@ If you are upgrading from 5.7.19 to a newer kernel version (5.10+), you will nee
 
 ### Another way:
 
-Check <https://github.com/marcosfad/mbp-ubuntu/blob/master/files/chroot_build.sh> to see how it is done.
+Check <https://github.com/alex-007/mbp-neon/blob/master/files/chroot_build.sh> to see how it is done.
 
 ## Know issues (Following the marcosfad/mbp-ubuntu)
 
