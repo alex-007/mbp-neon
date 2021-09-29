@@ -47,7 +47,7 @@ sudo gdd bs=4M if=neon-user-<kernel-version>.iso of=/dev/diskX conv=fdatasync st
 
 ## Configuration
 
-- See <https://wiki.t2linux.org/guides/wifi/>
+- See [t2linux wifi guide][t2linux-wiki]
 - To install additional languages, install appropriate langpack via apt `sudo apt-get install language-pack-[cod] language-pack-gnome-[cod] language-pack-[cod]-base language-pack-gnome-[cod]-base `
     - see https://askubuntu.com/questions/149876/how-can-i-install-one-language-by-command-line
 - You can change mappings of ctrl, fn, option keys (PC keyboard mappings) by creating `/etc/modprobe.d/hid_apple.conf` file and recreating grub config. All available modifications could be found here: <https://github.com/free5lot/hid-apple-patched>
@@ -149,3 +149,6 @@ On MBP 16,1, you might also need to disable realtime scheduling if the above gis
 - @aunali1 - thanks for ArchLinux Kernel CI, the continuous support on discord and your continuous efforts.
 - @ppaulweber - thanks for keyboard and Macbook Air patches
 - @kevineinarsson - thanks for the audio settings
+Place your WiFi Firmware here. How to choose what files to add see [t2linux wifi guide][t2linux-wiki]
+
+[t2linux-wiki]: https://wiki.t2linux.org/guides/wifi/

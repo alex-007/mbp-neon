@@ -32,7 +32,7 @@ echo >&2 "===]> Info: Install systemd and Ubuntu MBP Repo... "
 apt-get install -y systemd-sysv gnupg curl wget
 
 mkdir -p /etc/apt/sources.list.d
-echo "deb https://mbp-ubuntu-kernel.herokuapp.com/ /" >/etc/apt/sources.list.d/mbp-ubuntu-kernel.list
+echo "#deb https://mbp-ubuntu-kernel.herokuapp.com/ /" >/etc/apt/sources.list.d/mbp-ubuntu-kernel.list
 curl -L https://mbp-ubuntu-kernel.herokuapp.com/KEY.gpg | apt-key add -
 echo "deb http://archive.neon.kde.org/user focal main" > /etc/apt/sources.list.d/neon.list
 curl -L http://archive.neon.kde.org/public.key | apt-key add -
@@ -68,10 +68,14 @@ apt-get install -y -qq -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="
   linux-generic \
   linux-headers-generic \
   grub-efi-amd64-signed \
-  "linux-image-${KERNEL_VERSION}" \
-  "linux-headers-${KERNEL_VERSION}" \
   intel-microcode \
   thermald
+
+
+echo >&2 "===]> Info: Install kernel... "
+dpkg -i /tmp/setup_files/kernel/*.deb
+#  "linux-image-${KERNEL_VERSION}" \
+#  "linux-headers-${KERNEL_VERSION}" \
 
 echo >&2 "===]> Info: Install window manager... "
 
@@ -108,7 +112,7 @@ APPLE_BCE_DRIVER_MODULE_VERSION=0.2
 
 APPLE_IB_DRIVER_GIT_URL=https://github.com/t2linux/apple-ib-drv
 APPLE_IB_DRIVER_BRANCH_NAME=mbp15
-APPLE_IB_DRIVER_COMMIT_HASH=fc9aefa5a564e6f2f2bb0326bffb0cef0446dc05
+#APPLE_IB_DRIVER_COMMIT_HASH=fc9aefa5a564e6f2f2bb0326bffb0cef0446dc05
 APPLE_IB_DRIVER_MODULE_NAME=apple-ibridge
 APPLE_IB_DRIVER_MODULE_VERSION=0.2
 
@@ -136,7 +140,7 @@ printf '\n### apple-bce start ###\nhid-apple\nsnd-seq\napple-bce\n### apple-bce 
 
 git clone --single-branch --branch ${APPLE_IB_DRIVER_BRANCH_NAME} ${APPLE_IB_DRIVER_GIT_URL} \
     /usr/src/"${APPLE_IB_DRIVER_MODULE_NAME}-${APPLE_IB_DRIVER_MODULE_VERSION}"
-git -C /usr/src/"${APPLE_IB_DRIVER_MODULE_NAME}-${APPLE_IB_DRIVER_MODULE_VERSION}" checkout "${APPLE_IB_DRIVER_COMMIT_HASH}"
+#git -C /usr/src/"${APPLE_IB_DRIVER_MODULE_NAME}-${APPLE_IB_DRIVER_MODULE_VERSION}" checkout "${APPLE_IB_DRIVER_COMMIT_HASH}"
 dkms install -m "${APPLE_IB_DRIVER_MODULE_NAME}" -v "${APPLE_IB_DRIVER_MODULE_VERSION}" -k "${KERNEL_VERSION}"
 printf '\n### applespi start ###\napple_ibridge\napple_ib_tb\napple_ib_als\n### applespi end ###' >>/etc/modules-load.d/applespi.conf
 printf '\n# display f* key in touchbar\noptions apple-ib-tb fnmode=2\n'  >> /etc/modprobe.d/apple-touchbar.conf
@@ -170,7 +174,11 @@ apt-get purge -y -qq \
   linux-image-5.4.0-28-generic \
   linux-image-generic \
   linux-modules-5.4.0-28-generic \
-  linux-modules-extra-5.4.0-28-generic
+  linux-modules-extra-5.4.0-28-generic \
+  linux-image-5.11.0-37-generic \
+  linux-modules-5.11.0-37-generic \
+  linux-modules-extra-5.11.0-37-generic \
+  linux-image-generic-hwe-20.04
 
 apt-get autoremove -y
 
@@ -193,7 +201,7 @@ dpkg-reconfigure network-manager
 
 echo >&2 "===]> Info: Configure Network Manager to use iwd... "
 mkdir -p /etc/NetworkManager/conf.d
-printf '[device]\nwifi.backend=iwd\n' > /etc/NetworkManager/conf.d/wifi_backend.conf
+printf '[device]\n#wifi.backend=iwd\n' > /etc/NetworkManager/conf.d/wifi_backend.conf
 #systemctl enable iwd.service
 
 echo >&2 "===]> Info: Cleanup the chroot environment... "
