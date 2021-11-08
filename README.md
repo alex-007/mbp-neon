@@ -1,8 +1,6 @@
 # mbp-kde-neon
 
-The ISO in from this repo should allow you to install KDE Neon without using an external keyboard or mouse on a MacBook Pro. It work in my MacBook with T2.
-
-[![CI](https://github.com/marcosfad/mbp-ubuntu/actions/workflows/CI.yml/badge.svg)](https://github.com/marcosfad/mbp-ubuntu/actions/workflows/CI.yml)
+The ISO in from this repo should allow you to install KDE Neon without using an external keyboard or mouse on a MacBook Pro. It works with my MacBook with T2.
 
 **If this repo helped you in any way, consider inviting a coffee to the people in the [credits](https://github.com/marcosfad/mbp-ubuntu#credits).**
 
