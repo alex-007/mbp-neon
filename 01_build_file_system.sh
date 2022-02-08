@@ -41,6 +41,3 @@ echo >&2 "===]> Info: Fix suspend... "
 cp -rfv "${ROOT_PATH}"/files/suspend/rmmod_tb.sh "${CHROOT_PATH}"/lib/systemd/system-sleep/rmmod_tb.sh
 chmod +x "${CHROOT_PATH}"/lib/systemd/system-sleep/rmmod_tb.sh
 
-### Copy wifi drivers
-echo >&2 "===]> Info: Fix wifi... "
-cp -rfv "${ROOT_PATH}"/files/wifi/* "${CHROOT_PATH}"/lib/firmware/brcm/

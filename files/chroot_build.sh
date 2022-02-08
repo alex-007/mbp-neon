@@ -71,11 +71,13 @@ apt-get install -y -qq -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="
   intel-microcode \
   thermald
 
+# This is not ideal, but it should work until the apt repo gets updated.
 
-echo >&2 "===]> Info: Install kernel... "
-dpkg -i /tmp/setup_files/kernel/*.deb
-#  "linux-image-${KERNEL_VERSION}" \
-#  "linux-headers-${KERNEL_VERSION}" \
+curl -L https://github.com/AdityaGarg8/T2-Ubuntu-Kernel/releases/download/v5.16.7-1/linux-headers-5.16.7-t2_5.16.7-1_amd64.deb > /tmp/headers.deb
+curl -L https://github.com/AdityaGarg8/T2-Ubuntu-Kernel/releases/download/v5.16.7-1/linux-image-5.16.7-t2_5.16.7-1_amd64.deb > /tmp/image.deb
+curl -L https://cdn.discordapp.com/attachments/706581810745966653/926729551558639646/iso-firmware.deb > /tmp/firmware.deb
+file /tmp/*
+apt install /tmp/headers.deb /tmp/image.deb /tmp/firmware.deb
 
 echo >&2 "===]> Info: Install window manager... "
 
@@ -98,52 +100,40 @@ apt-get install -y -qq -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="
   gcc \
   dkms \
   iwd
+  
+#snap install snap-store
 
 echo >&2 "===]> Info: Change initramfs format (for grub)... "
 sed -i "s/COMPRESS=lz4/COMPRESS=gzip/g" "/etc/initramfs-tools/initramfs.conf"
 
-echo >&2 "===]> Info: Add drivers... "
-
-APPLE_BCE_DRIVER_GIT_URL=https://github.com/t2linux/apple-bce-drv.git
-APPLE_BCE_DRIVER_BRANCH_NAME=aur
-APPLE_BCE_DRIVER_COMMIT_HASH=f93c6566f98b3c95677de8010f7445fa19f75091
-APPLE_BCE_DRIVER_MODULE_NAME=apple-bce
-APPLE_BCE_DRIVER_MODULE_VERSION=0.2
-
-APPLE_IB_DRIVER_GIT_URL=https://github.com/t2linux/apple-ib-drv
-APPLE_IB_DRIVER_BRANCH_NAME=mbp15
-#APPLE_IB_DRIVER_COMMIT_HASH=fc9aefa5a564e6f2f2bb0326bffb0cef0446dc05
-APPLE_IB_DRIVER_MODULE_NAME=apple-ibridge
-APPLE_IB_DRIVER_MODULE_VERSION=0.2
+echo >&2 "===]> Info: Configure drivers... "
 
 # thunderbolt is working for me.
 #printf '\nblacklist thunderbolt' >>/etc/modprobe.d/blacklist.conf
 
-git clone --single-branch --branch ${APPLE_BCE_DRIVER_BRANCH_NAME} ${APPLE_BCE_DRIVER_GIT_URL} \
-  /usr/src/"${APPLE_BCE_DRIVER_MODULE_NAME}-${APPLE_BCE_DRIVER_MODULE_VERSION}"
-git -C /usr/src/"${APPLE_BCE_DRIVER_MODULE_NAME}-${APPLE_BCE_DRIVER_MODULE_VERSION}" checkout "${APPLE_BCE_DRIVER_COMMIT_HASH}"
-
-cat << EOF > /usr/src/${APPLE_BCE_DRIVER_MODULE_NAME}-${APPLE_BCE_DRIVER_MODULE_VERSION}/dkms.conf
-PACKAGE_NAME=apple-bce
-PACKAGE_VERSION=0.1
-CLEAN="make clean"
-MAKE="make"
-BUILT_MODULE_NAME[0]="apple-bce"
-DEST_MODULE_LOCATION[0]="/updates"
-AUTOINSTALL="yes"
-REMAKE_INITRD="yes"
-EOF
-
-dkms install -m "${APPLE_BCE_DRIVER_MODULE_NAME}" -v "${APPLE_BCE_DRIVER_MODULE_VERSION}" -k "${KERNEL_VERSION}"
-printf '\n### apple-bce start ###\nhid-apple\nbcm5974\nsnd-seq\napple-bce\n### apple-bce end ###' >>/etc/modules-load.d/apple-bce.conf
+printf 'apple-bce' >>/etc/modules-load.d/t2.conf
 printf '\n### apple-bce start ###\nhid-apple\nsnd-seq\napple-bce\n### apple-bce end ###' >>/etc/initramfs-tools/modules
+printf '\n# display f* key in touchbar\noptions apple-ib-tb fnmode=1\n'  >> /etc/modprobe.d/apple-tb.conf
+#printf '\n# delay loading of the touchbar driver\ninstall apple-ib-tb /bin/sleep 7; /sbin/modprobe --ignore-install apple-ib-tb' >> /etc/modprobe.d/delay-tb.conf
 
-git clone --single-branch --branch ${APPLE_IB_DRIVER_BRANCH_NAME} ${APPLE_IB_DRIVER_GIT_URL} \
-    /usr/src/"${APPLE_IB_DRIVER_MODULE_NAME}-${APPLE_IB_DRIVER_MODULE_VERSION}"
-#git -C /usr/src/"${APPLE_IB_DRIVER_MODULE_NAME}-${APPLE_IB_DRIVER_MODULE_VERSION}" checkout "${APPLE_IB_DRIVER_COMMIT_HASH}"
-dkms install -m "${APPLE_IB_DRIVER_MODULE_NAME}" -v "${APPLE_IB_DRIVER_MODULE_VERSION}" -k "${KERNEL_VERSION}"
-printf '\n### applespi start ###\napple_ibridge\napple_ib_tb\napple_ib_als\n### applespi end ###' >>/etc/modules-load.d/applespi.conf
-printf '\n# display f* key in touchbar\noptions apple-ib-tb fnmode=2\n'  >> /etc/modprobe.d/apple-touchbar.conf
+echo '
+#!/usr/bin/env bash
+echo "Select Touch Bar mode"
+echo
+echo "0: Only show F1-F12"
+echo "1: Show media and brightness controls, use the fn key to switch to F1-12"
+echo "2: Show F1-F12, use the fn key to switch to media and brightness controls"
+echo "3: Only show media and brightness controls"
+echo "4: Only show the escape key"
+read tb
+echo "Changing default mode ..."
+echo "# display f* key in touchbar" > /etc/modprobe.d/apple-tb.conf
+echo "options apple-ib-tb fnmode=$tb" >> /etc/modprobe.d/apple-tb.conf
+bash -c "echo $tb > /sys/class/input/*/device/fnmode"
+echo "Done!"' | tee /usr/local/bin/touchbar >/dev/null
+
+chmod a+x /usr/local/bin/touchbar
+chown root:root /usr/local/bin/touchbar
 
 
 echo >&2 "===]> Info: Update initramfs... "
@@ -174,11 +164,7 @@ apt-get purge -y -qq \
   linux-image-5.4.0-28-generic \
   linux-image-generic \
   linux-modules-5.4.0-28-generic \
-  linux-modules-extra-5.4.0-28-generic \
-  linux-image-5.11.0-37-generic \
-  linux-modules-5.11.0-37-generic \
-  linux-modules-extra-5.11.0-37-generic \
-  linux-image-generic-hwe-20.04
+  linux-modules-extra-5.4.0-28-generic
 
 apt-get autoremove -y
 
@@ -196,12 +182,16 @@ plugins=ifupdown,keyfile
 dns=dnsmasq
 [ifupdown]
 managed=false
+
+[device]
+wifi.scan-rand-mac-address=no
 EOF
 dpkg-reconfigure network-manager
 
 echo >&2 "===]> Info: Configure Network Manager to use iwd... "
 mkdir -p /etc/NetworkManager/conf.d
-printf '[device]\n#wifi.backend=iwd\n' > /etc/NetworkManager/conf.d/wifi_backend.conf
+#my wifi doesn't work with idw, but works well with wpa_supplicant
+printf '#[device]\n#wifi.backend=iwd\n' > /etc/NetworkManager/conf.d/wifi_backend.conf
 #systemctl enable iwd.service
 
 echo >&2 "===]> Info: Cleanup the chroot environment... "

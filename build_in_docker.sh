@@ -3,7 +3,6 @@
 set -eu -o pipefail
 
 DOCKER_IMAGE=ubuntu:20.04
-#DOCKER_IMAGE=kdeneon/plasma:user
 
 docker pull ${DOCKER_IMAGE}
 docker run \
