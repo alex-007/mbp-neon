@@ -2,7 +2,7 @@
 
 The ISO in from this repo should allow you to install KDE Neon without using an external keyboard or mouse on a MacBook Pro. It works with my MacBook with T2.
 
-**If this repo helped you in any way, consider inviting a coffee to the people in the [credits](https://github.com/marcosfad/mbp-ubuntu#credits).**
+**If this repo helped you in any way, consider inviting a coffee to the people in the [credits](#credits).**
 
 KDE Neon User ISO with Apple T2 patches built-in.
 
@@ -10,11 +10,7 @@ Apple T2 drivers are integrated with this iso.
 
 This repo is a rework of the great work done by [@marcosfad](https://github.com/marcosfad/mbp-ubuntu)
 
-I'm using the Kernel from - <https://github.com/marcosfad/mbp-ubuntu-kernel>
-
-Using additional drivers:
-- [Apple T2 (apple-bce) (audio, keyboard, touchpad)](https://github.com/t2linux/apple-bce-drv)
-- [Touchbar (apple-ibridge, apple-ib-tb, apple-ib-als)](https://github.com/t2linux/apple-ib-drv)
+I'm using the Kernel from - <https://github.com/t2linux/T2-Ubuntu-Kernel>
 
 Bootloader is configure correctly out of the box. No workaround needed.
 
@@ -46,8 +42,6 @@ sudo gdd bs=4M if=neon-user-<kernel-version>.iso of=/dev/diskX conv=fdatasync st
 ## Configuration
 
 - See [t2linux wifi guide][t2linux-wiki]
-- To install additional languages, install appropriate langpack via apt `sudo apt-get install language-pack-[cod] language-pack-gnome-[cod] language-pack-[cod]-base language-pack-gnome-[cod]-base `
-    - see https://askubuntu.com/questions/149876/how-can-i-install-one-language-by-command-line
 - You can change mappings of ctrl, fn, option keys (PC keyboard mappings) by creating `/etc/modprobe.d/hid_apple.conf` file and recreating grub config. All available modifications could be found here: <https://github.com/free5lot/hid-apple-patched>
 ```
 # /etc/modprobe.d/hid_apple.conf
@@ -69,32 +63,16 @@ GRUB_TIMEOUT=10
 and then:
 `sudo update-grub`
 
-## Update to newer kernels
-
-**IF YOU UPDATE THE KERNEL, REMEMBER TO ADD THE REQUIRED DRIVERS AGAIN.**
-
-### The easy way:
-
-The live cd includes dkms and will automatically run when a new kernel is installed. You can use `dkms status` to see it.
-
-If you are upgrading from 5.7.19 to a newer kernel version (5.10+), you will need updated versions of these kernel modules. Instructions for installing updated ones are [here](https://wiki.t2linux.org/guides/dkms/).
-
-### Another way:
-
-Check <https://github.com/alex-007/mbp-neon/blob/master/files/chroot_build.sh> to see how it is done.
-
 ## Know issues (Following the marcosfad/mbp-ubuntu)
 
 - Sound is not working after the install. Follow the instructions detailed by @kevineinarsson: <https://gist.github.com/kevineinarsson/8e5e92664f97508277fefef1b8015fba>  
 On MBP 16,1, you might also need to disable realtime scheduling if the above gist doesn't work, because the pulseaudio server might get killed if the realtime budget is exceeded (<https://bugs.freedesktop.org/show_bug.cgi?id=94629>). Just add `realtime-scheduling = no` to `/etc/pulse/daemon.conf`.
 - Checksum is failing for 2 files: md5sum.txt and /boot/grub/bios.img
-- I'm having troubles shutting down ubuntu. Screen is black but fan keeps on working. I have to force shutdown. 
 
 ## Not working (Following the mikeeq/mbp-fedora)
 
 - Dynamic audio input/output change (on connecting/disconnecting headphones jack)
 - TouchID - (@MCMrARM is working on it - https://github.com/Dunedan/mbp-2016-linux/issues/71#issuecomment-528545490)
-- Thunderbolt (is disabled, because driver was causing kernel panics (not tested with 5.5 kernel))
 - Microphone (it's recognised with new apple t2 sound driver, but there is a low mic volume amp)
 
 ## TODO
