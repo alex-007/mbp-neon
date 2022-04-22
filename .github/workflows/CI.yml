@@ -26,7 +26,7 @@ jobs:
       - name: Upload iso artifact
         uses: actions/upload-artifact@v2
         with:
-          name: mbp-ubuntu-${{ steps.tag.outputs.tag }}.z01
+          name: mbp-neon-${{ steps.tag.outputs.tag }}.z01
           path: ${{ github.workspace }}/output/*
 
       - name: Instructions for putting it back together
@@ -35,15 +35,18 @@ jobs:
           Download all the artifacts, and put them in a folder
           without other files. Then run:"
           unzip "*.z??.zip"
-          cat livecd-${{ steps.tag.outputs.tag }}-mbp.z?? > cd.zip
+          cat livecd-${{ steps.tag.outputs.tag }}-t2.z?? > cd.zip
           echo unzip cd.zip
           EOF
+
       - name: Release
         if: github.ref == 'refs/heads/master'
         uses: softprops/action-gh-release@v1
         with:
-          data: ${{ github.workspace }}/output/*
+          files: ${{ github.workspace }}/*.iso
           tag_name: v20.04-${{ steps.tag.outputs.tag }}
-          draft: true
+          body: If you are facing blank screen after installation, try [booting using refind](https://wiki.t2linux.org/guides/refind/).
+          draft: false
+          prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

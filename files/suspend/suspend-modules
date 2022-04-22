@@ -1,0 +1,25 @@
+#!/bin/bash
+
+# Put into /lib/systemd/system-sleep/suspend-modules
+# chmod a+x /lib/systemd/system-sleep/suspend-modules
+
+# Create /etc/suspend-modules.conf
+# with one module per line
+
+# credits to:
+# https://bbs.archlinux.org/viewtopic.php?pid=1540125#p1540125
+# More info:
+# https://ubuntuforums.org/showthread.php?t=2314905&p=13555828#post13555828
+
+case $1 in
+    pre)
+        for mod in $(</etc/suspend-modules.conf); do
+            modprobe -r $mod
+        done
+    ;;
+    post)
+        for mod in $(</etc/suspend-modules.conf); do
+            modprobe $mod
+        done
+    ;;
+esac

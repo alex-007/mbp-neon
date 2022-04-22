@@ -11,7 +11,7 @@ mount none -t devpts /dev/pts
 export HOME=/root
 export LC_ALL=C
 
-echo "ubuntu-fs-live" >/etc/hostname
+echo "neon-fs-live" >/etc/hostname
 
 echo >&2 "===]> Info: Configure and update apt... "
 
@@ -73,8 +73,8 @@ apt-get install -y -qq -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="
 
 # This is not ideal, but it should work until the apt repo gets updated.
 
-curl -L https://github.com/AdityaGarg8/T2-Ubuntu-Kernel/releases/download/v5.16.7-1/linux-headers-5.16.7-t2_5.16.7-1_amd64.deb > /tmp/headers.deb
-curl -L https://github.com/AdityaGarg8/T2-Ubuntu-Kernel/releases/download/v5.16.7-1/linux-image-5.16.7-t2_5.16.7-1_amd64.deb > /tmp/image.deb
+curl -L https://github.com/t2linux/T2-Ubuntu-Kernel/releases/download/v${KVER}-${PREL}/linux-headers-${KERNEL_VERSION}_${KVER}-${PREL}_amd64.deb > /tmp/headers.deb
+curl -L https://github.com/t2linux/T2-Ubuntu-Kernel/releases/download/v${KVER}-${PREL}/linux-image-${KERNEL_VERSION}_${KVER}-${PREL}_amd64.deb > /tmp/image.deb
 curl -L https://cdn.discordapp.com/attachments/706581810745966653/926729551558639646/iso-firmware.deb > /tmp/firmware.deb
 file /tmp/*
 apt install /tmp/headers.deb /tmp/image.deb /tmp/firmware.deb
@@ -113,7 +113,7 @@ echo >&2 "===]> Info: Configure drivers... "
 
 printf 'apple-bce' >>/etc/modules-load.d/t2.conf
 printf '\n### apple-bce start ###\nhid-apple\nsnd-seq\napple-bce\n### apple-bce end ###' >>/etc/initramfs-tools/modules
-printf '\n# display f* key in touchbar\noptions apple-ib-tb fnmode=1\n'  >> /etc/modprobe.d/apple-tb.conf
+printf '\n# display f* key in touchbar\noptions apple-ib-tb fnmode=2\n'  >> /etc/modprobe.d/apple-tb.conf
 #printf '\n# delay loading of the touchbar driver\ninstall apple-ib-tb /bin/sleep 7; /sbin/modprobe --ignore-install apple-ib-tb' >> /etc/modprobe.d/delay-tb.conf
 
 echo '
@@ -177,9 +177,8 @@ dpkg-reconfigure -f readline resolvconf
 
 cat <<EOF >/etc/NetworkManager/NetworkManager.conf
 [main]
-rc-manager=resolvconf
 plugins=ifupdown,keyfile
-dns=dnsmasq
+
 [ifupdown]
 managed=false
 
